@@ -4,16 +4,49 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Symptom Checker</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <form action="/" method="POST">
         <h2>Please select the symptoms:</h2>
-        {% for symptom in symptoms %}
-        <input type="checkbox" id="{{ symptom }}" name="symptom" value="{{ symptom }}">
-        <label for="{{ symptom }}">{{ symptom }}</label><br>
-        {% endfor %}
+        <div class="search">
+            <label for="search">Search for your symptoms:</label>
+            <input type="text" id="search" name="search" placeholder="Type to search...">
+        </div>
+        <div class="symptoms">
+            {% for symptom in symptoms %}
+            <div class="symptom" data-symptom="{{ symptom|lower }}">
+                <input type="checkbox" id="symptom-{{ symptom|replace('_', ' ') }}" name="symptom" value="{{ symptom }}">
+                <label for="symptom-{{ symptom|replace('_', ' ') }}" class="symptom-label">{{ symptom|replace('_', ' ') }}</label>
+            </div>
+            {% endfor %}
+        </div>
         <br>
         <input type="submit" value="Submit">
     </form>
+
+    <script>
+        // Add smooth scrolling to the top of the page when the submit button is clicked
+        const submitButton = document.querySelector('input[type="submit"]');
+        submitButton.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // Filter symptoms based on user input
+        const searchInput = document.getElementById('search');
+        const symptoms = document.querySelectorAll('.symptom');
+
+        searchInput.addEventListener('input', function() {
+            const searchTerm = searchInput.value.toLowerCase();
+            symptoms.forEach(symptom => {
+                const symptomName = symptom.dataset.symptom;
+                if (symptomName.includes(searchTerm)) {
+                    symptom.style.display = 'flex';
+                } else {
+                    symptom.style.display = 'none';
+                }
+            });
+        });
+    </script>
 </body>
 </html>

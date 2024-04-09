@@ -41,8 +41,14 @@ def index():
         symptoms_present = [1 if symptom in symptoms_present else 0 for symptom in cols]
         symptoms_present = np.array(symptoms_present).reshape(1, -1)
         disease = clf.predict(symptoms_present)
-        disease = le.inverse_transform(disease)
-        return render_template('result.html', disease=disease[0])
+        disease = le.inverse_transform(disease)[0]
+        
+        # Calculate the confidence level
+        symptoms_given = len(symptoms_present[0])
+        symptoms_matching = sum(symptoms_present[0][i] for i in range(len(symptoms_present[0])) if symptoms_present[0][i] == 1)
+        confidence_level = (symptoms_matching / symptoms_given) * 100
+
+        return render_template('result.html', disease=disease, confidence_level=confidence_level)
     else:
         return render_template('index.html', symptoms=cols)
 
